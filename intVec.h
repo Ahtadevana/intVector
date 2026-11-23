@@ -12,4 +12,7 @@ typedef struct Vec {
 int vecInit(Vec *vec, size_t initSize);
 void vecDestroy(Vec *vec);
 
+int vecPushBack(Vec *vec, int data);
+int vecPopBack(Vec *vec);
+
 #endif // !INT_VECTOR_H
