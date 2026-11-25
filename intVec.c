@@ -1,13 +1,13 @@
 #include "intVec.h"
 #include <stdlib.h>
 
-// TODO: resolve size_t under/overflow
 // TODO: vector custom errors
 
 int vecInit(Vec *vec, size_t initSize) {
   if (initSize == 0 || vec == NULL || vec->base != NULL)
     return -1;
 
+  // TODO: resolve size_t under/overflow
   vec->base = malloc(initSize * sizeof *(vec->base));
   if (vec->base == NULL)
     return -1;
@@ -36,17 +36,27 @@ int vecPushBack(Vec *vec, int data) {
       return -1;
 
   if (vec->size == vec->cap) {
+    // TODO: resolve size_t under/overflow
     const size_t newCap = vec->cap * 2;
-    const size_t allocSize = newCap * sizeof *vec->base;
+    const size_t allocSize = newCap * sizeof(*vec->base);
 
     int *newBase = realloc(vec->base, allocSize);
     if (newBase == NULL)
       return -1;
+
     vec->base = newBase;
     vec->cap = newCap;
   }
 
   vec->base[vec->size] = data;
   vec->size++;
+  return 0;
+}
+
+int vecPopBack(Vec *vec) {
+  if (vec == NULL || vec->base == NULL || vec->size == 0)
+    return -1;
+
+  vec->size--;
   return 0;
 }
