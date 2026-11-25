@@ -84,6 +84,21 @@ int vecPopBack(Vec *vec) {
   return 0;
 }
 
+// TODO: resolve size_t under/overflow
+int vecGetAt(const Vec *vec, size_t index, int *result) {
+  if (vec == NULL || vec->base == NULL)
+    return -1;
+
+  if (index >= vec->size)
+    return -1;
+
+  if (result == NULL)
+    return -1;
+
+  *result = vec->base[index];
+  return 0;
+}
+
 void vecPrint(const Vec *vec) {
   if (vec == NULL) {
     printf("NULL\n");
