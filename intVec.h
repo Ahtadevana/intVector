@@ -15,7 +15,7 @@ void vecDestroy(Vec *vec);
 
 int vecReserve(Vec *vec, size_t newSize);
 // TODO: vecshrink
-int vecShrink(Vec *vec, size_t newSize);
+int vecShrink(Vec *vec, size_t newCap);
 
 int vecPushBack(Vec *vec, int data);
 // TODO: insertAt, replaceByIndex

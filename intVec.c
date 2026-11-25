@@ -1,4 +1,5 @@
 #include "intVec.h"
+#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -8,8 +9,10 @@ int vecInit(Vec *vec, size_t initSize) {
   if (initSize == 0 || vec == NULL || vec->base != NULL)
     return -1;
 
-  // TODO: resolve size_t under/overflow
-  vec->base = malloc(initSize * sizeof *(vec->base));
+  if (initSize > SIZE_MAX / sizeof *vec->base)
+    return -1;
+
+  vec->base = malloc(initSize * sizeof *vec->base);
   if (vec->base == NULL)
     return -1;
 
@@ -28,24 +31,49 @@ void vecDestroy(Vec *vec) {
   vec->cap = 0;
 }
 
-// TODO: resolve size_t under/overflow
 int vecReserve(Vec *vec, size_t newCap) {
-  if (vec == NULL || vec->base == NULL)
+  if (vec == NULL)
     return -1;
 
-  if (vec->cap == 0 || newCap < vec->cap)
+  if (newCap > SIZE_MAX / sizeof *vec->base)
     return -1;
 
-  if (vec->cap == newCap)
+  if (vec->base == NULL)
+    if (vecInit(vec, newCap) != 0)
+      return -1;
+
+  if (newCap <= vec->cap)
     return 0;
 
-  const size_t allocSize = newCap * sizeof(*vec->base);
+  const size_t allocSize = newCap * sizeof *vec->base;
 
   int *newBase = realloc(vec->base, allocSize);
   if (newBase == NULL)
     return -1;
   vec->base = newBase;
 
+  vec->cap = newCap;
+  return 0;
+}
+
+int vecShrink(Vec *vec, size_t newCap) {
+  if (vec == NULL || vec->base == NULL)
+    return -1;
+
+  if (newCap > SIZE_MAX / sizeof *vec->base)
+    return -1;
+
+  if (newCap >= vec->cap)
+    return 0;
+
+  size_t allocSize = newCap * sizeof *vec->base;
+
+  int *newBase = realloc(vec->base, allocSize);
+  if (newBase == NULL)
+    return -1;
+  vec->base = newBase;
+
+  vec->size = newCap < vec->size ? newCap : vec->size;
   vec->cap = newCap;
   return 0;
 }
@@ -59,15 +87,18 @@ int vecPushBack(Vec *vec, int data) {
       return -1;
 
   if (vec->size == vec->cap) {
-    // TODO: resolve size_t under/overflow
     const size_t newCap = vec->cap * 2;
-    const size_t allocSize = newCap * sizeof(*vec->base);
+
+    if (newCap > SIZE_MAX / sizeof *vec->base)
+      return -1;
+
+    const size_t allocSize = newCap * sizeof *vec->base;
 
     int *newBase = realloc(vec->base, allocSize);
     if (newBase == NULL)
       return -1;
-
     vec->base = newBase;
+
     vec->cap = newCap;
   }
 
@@ -84,7 +115,6 @@ int vecPopBack(Vec *vec) {
   return 0;
 }
 
-// TODO: resolve size_t under/overflow
 int vecGetAt(const Vec *vec, size_t index, int *result) {
   if (vec == NULL || vec->base == NULL)
     return -1;
