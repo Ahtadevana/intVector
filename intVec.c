@@ -5,22 +5,22 @@
 
 // TODO: vector custom errors
 
-int vecInit(Vec *vec, size_t initSize) {
-  if (initSize == 0 || vec == NULL || vec->base != NULL)
+int vec_init(Vec *vec, size_t init_size) {
+  if (init_size == 0 || vec == NULL || vec->base != NULL)
     return -1;
 
-  if (initSize > SIZE_MAX / sizeof *vec->base)
+  if (init_size > SIZE_MAX / sizeof *vec->base)
     return -1;
 
-  vec->base = malloc(initSize * sizeof *vec->base);
+  vec->base = malloc(init_size * sizeof *vec->base);
   if (vec->base == NULL)
     return -1;
 
-  vec->cap = initSize;
+  vec->cap = init_size;
   return 0;
 }
 
-void vecDestroy(Vec *vec) {
+void vec_destroy(Vec *vec) {
   if (vec == NULL)
     return;
 
@@ -31,75 +31,76 @@ void vecDestroy(Vec *vec) {
   vec->cap = 0;
 }
 
-int vecReserve(Vec *vec, size_t newCap) {
+int vec_reserve(Vec *vec, size_t new_cap) {
   if (vec == NULL)
     return -1;
 
-  if (newCap > SIZE_MAX / sizeof *vec->base)
+  if (new_cap > SIZE_MAX / sizeof *vec->base)
     return -1;
 
   if (vec->base == NULL)
-    if (vecInit(vec, newCap) != 0)
+    if (vec_init(vec, new_cap) != 0)
       return -1;
 
-  if (newCap <= vec->cap)
+  if (new_cap <= vec->cap)
     return 0;
 
-  const size_t allocSize = newCap * sizeof *vec->base;
+  const size_t alloc_size = new_cap * sizeof *vec->base;
 
-  int *newBase = realloc(vec->base, allocSize);
-  if (newBase == NULL)
+  int *new_base = realloc(vec->base, alloc_size);
+  if (new_base == NULL)
     return -1;
-  vec->base = newBase;
+  vec->base = new_base;
 
-  vec->cap = newCap;
+  vec->cap = new_cap;
   return 0;
 }
 
-int vecShrink(Vec *vec, size_t newCap) {
+int vec_shrink(Vec *vec, size_t new_cap) {
   if (vec == NULL || vec->base == NULL)
     return -1;
 
-  if (newCap > SIZE_MAX / sizeof *vec->base)
+  if (new_cap > SIZE_MAX / sizeof *vec->base)
     return -1;
 
-  if (newCap >= vec->cap)
+  if (new_cap >= vec->cap)
     return 0;
 
-  size_t allocSize = newCap * sizeof *vec->base;
+  size_t alloc_size = new_cap * sizeof *vec->base;
 
-  int *newBase = realloc(vec->base, allocSize);
-  if (newBase == NULL)
+  int *new_base = realloc(vec->base, alloc_size);
+  if (new_base == NULL)
     return -1;
-  vec->base = newBase;
+  vec->base = new_base;
 
-  vec->size = newCap < vec->size ? newCap : vec->size;
-  vec->cap = newCap;
+  vec->size = new_cap < vec->size ? new_cap : vec->size;
+  vec->cap = new_cap;
+
   return 0;
 }
 
-int vecPushBack(Vec *vec, int data) {
+int vec_pushback(Vec *vec, int data) {
   if (vec == NULL)
     return -1;
 
   if (vec->base == NULL)
-    if (vecInit(vec, 1) != 0)
+    if (vec_init(vec, 1) != 0)
       return -1;
 
   if (vec->size == vec->cap) {
-    const size_t newCap = vec->cap * 2;
+    const size_t new_cap = vec->cap * 2;
 
-    if (newCap > SIZE_MAX / sizeof *vec->base)
+    if (new_cap > SIZE_MAX / sizeof *vec->base)
       return -1;
 
-    const size_t allocSize = newCap * sizeof *vec->base;
+    const size_t alloc_size = new_cap * sizeof *vec->base;
 
-    int *newBase = realloc(vec->base, allocSize);
-    if (newBase == NULL)
+    int *new_base = realloc(vec->base, alloc_size);
+    if (new_base == NULL)
       return -1;
-    vec->base = newBase;
+    vec->base = new_base;
 
-    vec->cap = newCap;
+    vec->cap = new_cap;
   }
 
   vec->base[vec->size] = data;
@@ -107,7 +108,42 @@ int vecPushBack(Vec *vec, int data) {
   return 0;
 }
 
-int vecPopBack(Vec *vec) {
+int vec_insert_at(Vec *vec, size_t index, int data) {
+  if (vec == NULL || vec->base == NULL)
+    return -1;
+
+  if (index >= vec->size)
+    return -1;
+
+  if (vec->size == vec->cap) {
+    const size_t new_cap = vec->cap * 2;
+    if (new_cap > SIZE_MAX / sizeof *vec->base)
+      return -1;
+
+    const size_t alloc_size = new_cap * sizeof *vec->base;
+
+    int *new_arr = malloc(alloc_size);
+    if (new_arr == NULL)
+      return -1;
+
+    // TODO: fix shifting algorithm
+    for (size_t i = 0; i < vec->size; ++i) {
+      if (i == index) {
+        new_arr[i] = data;
+        continue;
+      }
+
+      new_arr[i] = vec->base[i];
+    }
+  }
+
+  for (size_t i = 0; i < vec->size; ++i) {
+  }
+
+  return 0;
+}
+
+int vec_popback(Vec *vec) {
   if (vec == NULL || vec->base == NULL || vec->size == 0)
     return -1;
 
@@ -115,7 +151,7 @@ int vecPopBack(Vec *vec) {
   return 0;
 }
 
-int vecGetAt(const Vec *vec, size_t index, int *result) {
+int vec_get_at(const Vec *vec, size_t index, int *result) {
   if (vec == NULL || vec->base == NULL)
     return -1;
 
@@ -129,7 +165,7 @@ int vecGetAt(const Vec *vec, size_t index, int *result) {
   return 0;
 }
 
-void vecPrint(const Vec *vec) {
+void vec_print(const Vec *vec) {
   if (vec == NULL) {
     printf("NULL\n");
     return;
@@ -146,3 +182,5 @@ void vecPrint(const Vec *vec) {
   }
   printf("]\n");
 }
+
+bool is_empty(const Vec *vec) { return vec->size == 0; }

@@ -10,28 +10,27 @@ typedef struct Vec {
   size_t cap;
 } Vec;
 
-int vecInit(Vec *vec, size_t initSize);
-void vecDestroy(Vec *vec);
+int vec_init(Vec *vec, size_t initSize);
+void vec_destroy(Vec *vec);
 
-int vecReserve(Vec *vec, size_t newSize);
+int vec_reserve(Vec *vec, size_t newSize);
 // TODO: vecshrink
-int vecShrink(Vec *vec, size_t newCap);
+int vec_shrink(Vec *vec, size_t newCap);
 
-int vecPushBack(Vec *vec, int data);
+int vec_pushback(Vec *vec, int data);
 // TODO: insertAt, replaceByIndex
-int vecInsertAt(Vec *vec, size_t index, int data);
-int vecSet(Vec *vec, size_t index, int data);
+int vec_insert_at(Vec *vec, size_t index, int data);
+int vec_set(Vec *vec, size_t index, int data);
 
-int vecPopBack(Vec *vec);
+int vec_popback(Vec *vec);
 // TODO: clear, popByIndex
-int vecClear(Vec *vec);
-int vecRemoveAt(Vec *vec, size_t index);
+int vec_clear(Vec *vec);
+int vec_remove_at(Vec *vec, size_t index);
 
-int vecGetAt(const Vec *vec, size_t index, int *result);
+int vec_get_at(const Vec *vec, size_t index, int *result);
 
-void vecPrint(const Vec *vec);
+void vec_print(const Vec *vec);
 
-// TODO: emptyCheck
-bool isEmpty(const Vec *vec);
+bool is_empty(const Vec *vec);
 
 #endif // !INT_VECTOR_H
